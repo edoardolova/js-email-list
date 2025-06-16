@@ -35,21 +35,40 @@ function renderMail(parent, arr){
     });
 }
 
-function generateRandomEmails(){
-    for(let i = 0; i < 10; i++){
-        fetch(endPoint)
-        .then(res => res.json())
-        .then(data =>{
-            saveGeneratedEmail(emailList, data.response);
-            if(emailList.length === 10){
-                renderMail(ulEl, emailList);
-            }
-        })
-        .catch(err =>{
-            console.log(err);
-        });
+// function generateRandomEmails(){
+//     for(let i = 0; i < 10; i++){
+//         fetch(endPoint)
+//         .then(res => res.json())
+//         .then(data =>{
+//             saveGeneratedEmail(emailList, data.response);
+//             if(emailList.length === 10){
+//                 renderMail(ulEl, emailList);
+//             }
+//         })
+//         .catch(err =>{
+//             console.log(err);
+//         });
+//     }
+// }
+function generateRandomEmails() {
+    const fetchPromises = [];
+
+    for (let i = 0; i < 10; i++) {
+        fetchPromises.push(fetch(endPoint).then(res => res.json()));
     }
+
+    Promise.all(fetchPromises)
+    .then(results => {
+        results.forEach(result => {
+            saveGeneratedEmail(emailList, result.response);
+        });
+        renderMail(ulEl, emailList);
+    })
+    .catch(err => {
+        console.error(err);
+    });
 }
+
 
 function resetEmail(){
     emailList.length = 0;
